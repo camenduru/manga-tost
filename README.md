@@ -18,4 +18,4 @@ npm run dev
 
 ### 🖼 Output
 
-https://github.com/user-attachments/assets/c4f229a5-3d68-4d8d-8775-1cdbf4de09b4
+https://github.com/user-attachments/assets/9f6fa1a4-2c4f-45eb-86ac-2d5c684fb9df
