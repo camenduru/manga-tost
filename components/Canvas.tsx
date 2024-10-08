@@ -8,9 +8,12 @@ import { Card } from "@/components/ui/card"
 import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from "@/components/ui/resizable"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
-import dynamic from 'next/dynamic'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
 interface BubbleState {
@@ -205,6 +208,31 @@ export default function ComicCreator() {
   const dragRef = useRef<{ isDragging: boolean; startX: number; startY: number }>({ isDragging: false, startX: 0, startY: 0 })
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([])
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [activeImagePanel, setActiveImagePanel] = useState<number | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [imageInputs, setImageInputs] = useState({
+    positive_prompt: "Juaner_cartoon, A curious mermaid with long blue hair, wearing a necklace made of seashells, holding a glowing pearl, swimming through an underwater cave filled with shimmering treasures and ancient ruins.",
+    seed: 0,
+    steps: 20,
+    guidance: 3.5,
+    lora_file: "j_cartoon_flux_bf16.safetensors",
+    lora_strength_model: 1,
+    lora_strength_clip: 1,
+    sampler_name: "euler",
+    scheduler: "simple",
+    width: 1024,
+    height: 1024
+  })
+
+  const loraOptions = [
+    "j_cartoon_flux_bf16.safetensors",
+    "bw_pixel_anime_v1.0.safetensors",
+    "ueno.safetensors",
+    "immoralgirl.safetensors",
+    "manga_style_f1d.safetensors",
+    "berserk_manga_style_flux.safetensors",
+    "Manga_and_Anime_cartoon_style_v1.safetensors"
+  ]
 
   const updateBubbleState = (id: string, newState: Partial<BubbleState>) => {
     setBubbleStates(prevStates => 
@@ -317,6 +345,43 @@ export default function ComicCreator() {
     }
   }
 
+  const handleInputChange = (name: string, value: string | number) => {
+    setImageInputs(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleGenerateImage = async () => {
+    if (activeImagePanel === null) return
+    setIsGenerating(true)
+
+    try {
+      const response = await fetch('https://comic.camenduru.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ input: imageInputs })
+      })
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+      if (data.output && data.output.result) {
+        const newImages = [...images]
+        newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 }
+        setImages(newImages)
+      }
+    } catch (error) {
+      console.error('Error generating image:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const renderPanel = (index: number) => (
     <div className="relative h-full bg-gray-700 flex items-center justify-center overflow-hidden">
       {images[index].src ? (
@@ -392,15 +457,178 @@ export default function ComicCreator() {
         />
       ))}
       {!isPrinting && (
-        <Button
-          className="absolute bottom-2 left-2"
-          size="sm"
-          variant="secondary"
-          onClick={() => addNewBubble(index)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Bubble
-        </Button>
+        <div className="absolute bottom-2 left-2 flex space-x-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => addNewBubble(index)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Bubble
+          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setActiveImagePanel(index)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Image
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Generate Image</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="positive_prompt" className="text-right">
+                    Prompt
+                  </Label>
+                  <Input
+                    id="positive_prompt"
+                    value={imageInputs.positive_prompt}
+                    onChange={(e) => handleInputChange('positive_prompt', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="seed" className="text-right">
+                    Seed
+                  </Label>
+                  <Input
+                    id="seed"
+                    type="number"
+                    value={imageInputs.seed}
+                    onChange={(e) => handleInputChange('seed', parseInt(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="steps" className="text-right">
+                    Steps
+                  </Label>
+                  <Input
+                    id="steps"
+                    type="number"
+                    value={imageInputs.steps}
+                    onChange={(e) => handleInputChange('steps', parseInt(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="guidance" className="text-right">
+                    Guidance
+                  </Label>
+                  <Input
+                    id="guidance"
+                    type="number"
+                    step="0.1"
+                    value={imageInputs.guidance}
+                    onChange={(e) => handleInputChange('guidance', parseFloat(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="lora_file" className="text-right">
+                    Lora File
+                  </Label>
+                  <Select
+                    value={imageInputs.lora_file}
+                    onValueChange={(value) => handleInputChange('lora_file', value)}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Lora File" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loraOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="lora_strength_model" className="text-right">
+                    Lora Strength Model
+                  </Label>
+                  <Input
+                    id="lora_strength_model"
+                    type="number"
+                    step="0.1"
+                    value={imageInputs.lora_strength_model}
+                    onChange={(e) => handleInputChange('lora_strength_model', parseFloat(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="lora_strength_clip" className="text-right">
+                    Lora Strength Clip
+                  </Label>
+                  <Input
+                    id="lora_strength_clip"
+                    type="number"
+                    step="0.1"
+                    value={imageInputs.lora_strength_clip}
+                    onChange={(e) => handleInputChange('lora_strength_clip', parseFloat(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sampler_name" className="text-right">
+                    Sampler Name
+                  </Label>
+                  <Input
+                    id="sampler_name"
+                    value={imageInputs.sampler_name}
+                    onChange={(e) => handleInputChange('sampler_name', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="scheduler" className="text-right">
+                    Scheduler
+                  </Label>
+                  <Input
+                    id="scheduler"
+                    value={imageInputs.scheduler}
+                    onChange={(e) => handleInputChange('scheduler', e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="width" className="text-right">
+                    Width
+                  </Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    value={imageInputs.width}
+                    onChange={(e) => handleInputChange('width', parseInt(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="height" className="text-right">
+                    Height
+                  </Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    value={imageInputs.height}
+                    onChange={(e) => handleInputChange('height', parseInt(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <Button onClick={handleGenerateImage} disabled={isGenerating}>
+                {isGenerating ? 'Generating...' : 'Generate'}
+              </Button>
+            </DialogContent>
+          </Dialog>
+        </div>
       )}
     </div>
   )
@@ -438,7 +666,7 @@ export default function ComicCreator() {
           </ResizablePanelGroup>
         </Card>
       </div>
-      <div className="w-64 bg-white p-4 shadow-lg space-y-4 text-black">
+      <div className="w-64 bg-white p-4 shadow-lg space-y-4 text-black overflow-y-auto">
         <h2 className="text-lg font-bold">Bubble Settings</h2>
         {selectedState ? (
           <>
@@ -537,7 +765,7 @@ export default function ComicCreator() {
                 <span>Black</span>
                 <Switch
                   checked={selectedState.arrowColor === 'white'}
-                  onCheckedChange={(checked) => updateBubbleState(selectedState.id, { arrowColor: checked ? 'white' : 'black' })}
+                  onCheckedChange={(checked)  => updateBubbleState(selectedState.id, { arrowColor: checked ? 'white' : 'black' })}
                 />
                 <span>White</span>
               </div>
