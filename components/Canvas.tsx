@@ -374,17 +374,11 @@ export default function ComicCreator() {
 
       const data = await response.json()
       if (data.output && data.output.result) {
-        const imageResponse = await fetch(data.output.result)
-        const blob = await imageResponse.blob()
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          const base64data = reader.result as string
-          setGeneratedImage(base64data)
-          const newImages = [...images]
-          newImages[activeImagePanel] = { src: base64data, zoom: 1, x: 0, y: 0 }
-          setImages(newImages)
-        }
-        reader.readAsDataURL(blob)
+        const newImages = [...images]
+        setTimeout(() => {
+          newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 };
+          setImages(newImages);
+        }, 1000);
       }
     } catch (error) {
       console.error('Error generating image:', error)
