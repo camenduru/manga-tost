@@ -210,6 +210,9 @@ export default function ComicCreator() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [activeImagePanel, setActiveImagePanel] = useState<number | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   const [imageInputs, setImageInputs] = useState({
     positive_prompt: "Juaner_cartoon, A curious mermaid with long blue hair, wearing a necklace made of seashells, holding a glowing pearl, swimming through an underwater cave filled with shimmering treasures and ancient ruins.",
     seed: 0,
@@ -371,14 +374,23 @@ export default function ComicCreator() {
 
       const data = await response.json()
       if (data.output && data.output.result) {
-        const newImages = [...images]
-        newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 }
-        setImages(newImages)
+        const imageResponse = await fetch(data.output.result)
+        const blob = await imageResponse.blob()
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          const base64data = reader.result as string
+          setGeneratedImage(base64data)
+          const newImages = [...images]
+          newImages[activeImagePanel] = { src: base64data, zoom: 1, x: 0, y: 0 }
+          setImages(newImages)
+        }
+        reader.readAsDataURL(blob)
       }
     } catch (error) {
       console.error('Error generating image:', error)
     } finally {
       setIsGenerating(false)
+      setIsDialogOpen(false)
     }
   }
 
@@ -466,12 +478,15 @@ export default function ComicCreator() {
             <Plus className="h-4 w-4 mr-2" />
             Add Bubble
           </Button>
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
                 size="sm"
                 variant="secondary"
-                onClick={() => setActiveImagePanel(index)}
+                onClick={() => {
+                  setActiveImagePanel(index)
+                  setIsDialogOpen(true)
+                }}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Image
