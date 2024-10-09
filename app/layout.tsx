@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Canvas Example",
-  description: "Canvas Example",
+  title: "TostAI Manga Creator - Powered by Runpod",
+  description: "TostAI Manga Creator - Powered by Runpod",
 };
 
 export default function RootLayout({
