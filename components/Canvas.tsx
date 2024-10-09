@@ -378,7 +378,7 @@ export default function ComicCreator() {
         setTimeout(() => {
           newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 };
           setImages(newImages);
-        }, 1000);
+        }, 2000);
       }
     } catch (error) {
       console.error('Error generating image:', error)
@@ -495,11 +495,12 @@ export default function ComicCreator() {
                   <Label htmlFor="positive_prompt" className="text-right">
                     Prompt
                   </Label>
-                  <Input
+                  <textarea
                     id="positive_prompt"
                     value={imageInputs.positive_prompt}
                     onChange={(e) => handleInputChange('positive_prompt', e.target.value)}
-                    className="col-span-3"
+                    className="col-span-3 h-18 resize-none"
+                    rows={3}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
