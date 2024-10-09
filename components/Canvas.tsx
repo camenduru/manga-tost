@@ -805,9 +805,11 @@ export default function ComicCreator() {
         <div className="flex-grow"></div>
         <div className="flex flex-col items-center mt-auto">
           <br />
+          <a href="https://github.com/camenduru/react-comic" className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">🌐 Open Source</a>
+          <br />
           <a href="https://tost.ai/" className="flex items-center text-yellow-600 hover:text-yellow-800 transition-colors">🥪 TostAI Manga Creator</a>
           <br />
-          <a href="https://runpod.io/" className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <a href="https://runpod.io/" className="flex items-center text-purple-600 hover:text-purple-800 transition-colors">
             <svg
               className="mr-2"
               focusable="false"
