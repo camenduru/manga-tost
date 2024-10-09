@@ -18,6 +18,8 @@ npm run dev
 
 ### 🖼 Output
 
+https://github.com/user-attachments/assets/9bd0d728-1dba-449e-8ff5-7e1f2bde1cdc
+
 https://github.com/user-attachments/assets/9f6fa1a4-2c4f-45eb-86ac-2d5c684fb9df
 
 ### 🏢 Sponsor
