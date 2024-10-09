@@ -3,7 +3,7 @@
 🥳 Please join my patreon community https://patreon.com/camenduru <br />
 
 ### 🌐 Page
-https://manga.tost.ai (wait for the server to wake up)
+https://manga.tost.ai (please wait for the server to wake up)
 
 ### 🧬 Code
 https://github.com/facebook/react <br />
