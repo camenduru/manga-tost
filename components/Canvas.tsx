@@ -483,7 +483,7 @@ export default function ComicCreator() {
                 }}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Image
+                Generate Image
               </Button>
             </DialogTrigger>
             <DialogContent>
