@@ -234,7 +234,8 @@ export default function ComicCreator() {
     "immoralgirl.safetensors",
     "manga_style_f1d.safetensors",
     "berserk_manga_style_flux.safetensors",
-    "Manga_and_Anime_cartoon_style_v1.safetensors"
+    "Manga_and_Anime_cartoon_style_v1.safetensors",
+    "None"
   ]
 
   const updateBubbleState = (id: string, newState: Partial<BubbleState>) => {
