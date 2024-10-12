@@ -87,7 +87,6 @@ def generate(input):
 
     if lora_file != "None":
         pipe.load_lora(lora_path=lora_path, scale=lora_strength_model, name="lora")
-    else:
         if lora_file == "bw_pixel_anime_v1.0.safetensors":
             positive_prompt = "bw_pixel_anime " + positive_prompt
         elif lora_file == "ueno.safetensors":
