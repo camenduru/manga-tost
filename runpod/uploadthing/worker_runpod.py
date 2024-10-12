@@ -98,19 +98,19 @@ def generate(input):
         sigmas = BasicScheduler.get_sigmas(unet, scheduler, steps, 1.0)[0]
     else:
         if lora_file == "bw_pixel_anime_v1.0.safetensors":
-            positive_prompt = "bw_pixel_anime " + positive_prompt
+            positive_prompt = "bw_pixel_anime, " + positive_prompt
         elif lora_file == "ueno.safetensors":
-            positive_prompt = "Ueno a black and white drawing of " + positive_prompt
+            positive_prompt = "Ueno, a black and white drawing of, " + positive_prompt
         elif lora_file == "immoralgirl.safetensors":
-            positive_prompt = "immoralgirl black and white manga page " + positive_prompt
+            positive_prompt = "immoralgirl, black and white manga page, " + positive_prompt
         elif lora_file == "manga_style_f1d.safetensors":
-            positive_prompt = "Black-and-white manga scene " + positive_prompt
+            positive_prompt = "Black-and-white manga scene, " + positive_prompt
         elif lora_file == "j_cartoon_flux_bf16.safetensors":
-            positive_prompt = "Juaner_cartoon " + positive_prompt
+            positive_prompt = "Juaner_cartoon, " + positive_prompt
         elif lora_file == "berserk_manga_style_flux.safetensors":
-            positive_prompt = "berserk style " + positive_prompt
+            positive_prompt = "berserk style, " + positive_prompt
         elif lora_file == "Manga_and_Anime_cartoon_style_v1.safetensors":
-            positive_prompt = "Manga and Anime cartoon style " + positive_prompt
+            positive_prompt = "Manga and Anime cartoon style, " + positive_prompt
         unet_lora, clip_lora = LoraLoader.load_lora(unet, clip, lora_file, lora_strength_model, lora_strength_clip)
         cond, pooled = clip_lora.encode_from_tokens(clip_lora.tokenize(positive_prompt), return_pooled=True)
         cond = [[cond, {"pooled_output": pooled}]]

@@ -78,7 +78,7 @@ def generate(input):
         seed = random.randint(0, 18446744073709551615)
     print(seed)
     
-    positive_prompt = "Juaner_cartoon " + positive_prompt
+    positive_prompt = "Juaner_cartoon, " + positive_prompt
     image_stream = pipe.generate(prompt=positive_prompt,
                         width=closestNumber(width, 16),
                         height=closestNumber(height, 16),

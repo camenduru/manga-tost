@@ -218,25 +218,25 @@ export default function ComicCreator() {
     seed: 0,
     steps: 20,
     guidance: 3.5,
-    // lora_file: "j_cartoon_flux_bf16.safetensors",
-    // lora_strength_model: 1,
-    // lora_strength_clip: 1,
-    // sampler_name: "euler",
-    // scheduler: "simple",
+    lora_file: "j_cartoon_flux_bf16.safetensors",
+    lora_strength_model: 1,
+    lora_strength_clip: 1,
+    sampler_name: "euler",
+    scheduler: "simple",
     width: 1024,
     height: 1024
   })
 
-  // const loraOptions = [
-  //   "j_cartoon_flux_bf16.safetensors",
-  //   "bw_pixel_anime_v1.0.safetensors",
-  //   "ueno.safetensors",
-  //   "immoralgirl.safetensors",
-  //   "manga_style_f1d.safetensors",
-  //   "berserk_manga_style_flux.safetensors",
-  //   "Manga_and_Anime_cartoon_style_v1.safetensors",
-  //   "None"
-  // ]
+  const loraOptions = [
+    "j_cartoon_flux_bf16.safetensors",
+    "bw_pixel_anime_v1.0.safetensors",
+    "ueno.safetensors",
+    "immoralgirl.safetensors",
+    "manga_style_f1d.safetensors",
+    "berserk_manga_style_flux.safetensors",
+    "Manga_and_Anime_cartoon_style_v1.safetensors",
+    "None"
+  ]
 
   const updateBubbleState = (id: string, newState: Partial<BubbleState>) => {
     setBubbleStates(prevStates => 
@@ -541,7 +541,7 @@ export default function ComicCreator() {
                     className="col-span-3"
                   />
                 </div>
-                {/* <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="lora_file" className="text-right">
                     Lora File
                   </Label>
@@ -608,7 +608,7 @@ export default function ComicCreator() {
                     onChange={(e) => handleInputChange('scheduler', e.target.value)}
                     className="col-span-3"
                   />
-                </div> */}
+                </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="width" className="text-right">
                     Width
