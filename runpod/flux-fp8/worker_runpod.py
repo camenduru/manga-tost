@@ -25,6 +25,7 @@ with torch.inference_mode():
         offload_text_enc=False
     )
     pipe = FluxPipeline.load_pipeline_from_config(config)
+    pipe.load_lora(lora_path="/content/models/loras/j_cartoon_flux_bf16.safetensors", scale=1.0)
 
 def closestNumber(n, m):
     q = int(n / m)
@@ -71,44 +72,20 @@ def generate(input):
     seed = values['seed']
     steps = values['steps']
     guidance = values['guidance']
-    lora_strength_model = values['lora_strength_model']
-    lora_strength_clip = values['lora_strength_clip']
-    sampler_name = values['sampler_name']
-    scheduler = values['scheduler']
-    lora_file = values['lora_file']
 
     if seed == 0:
         random.seed(int(time.time()))
         seed = random.randint(0, 18446744073709551615)
     print(seed)
-
-    lora_path = f"/content/models/loras/{lora_file}"
-    pipe.unload_lora("lora")
-
-    if lora_file != "None":
-        pipe.load_lora(lora_path=lora_path, scale=lora_strength_model, name="lora")
-        if lora_file == "bw_pixel_anime_v1.0.safetensors":
-            positive_prompt = "bw_pixel_anime " + positive_prompt
-        elif lora_file == "ueno.safetensors":
-            positive_prompt = "Ueno a black and white drawing of " + positive_prompt
-        elif lora_file == "immoralgirl.safetensors":
-            positive_prompt = "immoralgirl black and white manga page " + positive_prompt
-        elif lora_file == "manga_style_f1d.safetensors":
-            positive_prompt = "Black-and-white manga scene " + positive_prompt
-        elif lora_file == "j_cartoon_flux_bf16.safetensors":
-            positive_prompt = "Juaner_cartoon " + positive_prompt
-        elif lora_file == "berserk_manga_style_flux.safetensors":
-            positive_prompt = "berserk style " + positive_prompt
-        elif lora_file == "Manga_and_Anime_cartoon_style_v1.safetensors":
-            positive_prompt = "Manga and Anime cartoon style " + positive_prompt
-
+    
+    positive_prompt = "Juaner_cartoon " + positive_prompt
     image_stream = pipe.generate(prompt=positive_prompt,
                         width=closestNumber(width, 16),
                         height=closestNumber(height, 16),
                         num_steps=steps,
                         guidance=guidance,
                         seed=seed,
-                        strength=lora_strength_model,
+                        strength=1.0,
                         init_image=None)
     image = Image.open(image_stream)
     image.save("/content/flux-comic-tost.png")
