@@ -8,6 +8,7 @@ https://manga.tost.ai (please wait for the server to wake up)
 ### 🧬 Code
 https://github.com/facebook/react <br />
 https://github.com/vercel/next.js <br />
+https://github.com/aredden/flux-fp8-api <br />
 
 ### 📋 Tutorial
 ```
