@@ -83,7 +83,23 @@ def generate(input):
     print(seed)
 
     lora_path = f"/content/models/loras/{lora_file}"
-    pipe.load_lora(lora_path, scale=lora_strength_model)
+    pipe.unload_lora("lora")
+    pipe.load_lora(lora_path=lora_path, scale=lora_strength_model, name="lora")
+
+    if lora_file == "bw_pixel_anime_v1.0.safetensors":
+        positive_prompt = "bw_pixel_anime " + positive_prompt
+    elif lora_file == "ueno.safetensors":
+        positive_prompt = "Ueno a black and white drawing of " + positive_prompt
+    elif lora_file == "immoralgirl.safetensors":
+        positive_prompt = "immoralgirl black and white manga page " + positive_prompt
+    elif lora_file == "manga_style_f1d.safetensors":
+        positive_prompt = "Black-and-white manga scene " + positive_prompt
+    elif lora_file == "j_cartoon_flux_bf16.safetensors":
+        positive_prompt = "Juaner_cartoon " + positive_prompt
+    elif lora_file == "berserk_manga_style_flux.safetensors":
+        positive_prompt = "berserk style " + positive_prompt
+    elif lora_file == "Manga_and_Anime_cartoon_style_v1.safetensors":
+        positive_prompt = "Manga and Anime cartoon style " + positive_prompt
 
     image_stream = pipe.generate(prompt=positive_prompt,
                         width=closestNumber(width, 16),
