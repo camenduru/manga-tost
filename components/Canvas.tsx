@@ -113,22 +113,18 @@ function SpeechBubble({
     let rotation = arrowRotation
 
     if (position < size.width) {
-      // Top edge
       x = position
       y = -arrowSize
       rotation += 0
     } else if (position < size.width + size.height) {
-      // Right edge
       x = size.width - (arrowSize / 1.5)
       y = position - size.width
       rotation += 90
     } else if (position < 2 * size.width + size.height) {
-      // Bottom edge
       x = 2 * size.width + size.height - position - arrowSize
       y = size.height - (arrowSize * 1.1)
       rotation += 180
     } else {
-      // Left edge
       x = -(arrowSize / 2)
       y = perimeter - position - arrowSize
       rotation += 270
@@ -210,9 +206,7 @@ export default function ComicCreator() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [activeImagePanel, setActiveImagePanel] = useState<number | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   const [frameThickness, setFrameThickness] = useState(0)
 
   const [imageInputs, setImageInputs] = useState({
@@ -317,6 +311,18 @@ export default function ComicCreator() {
     if (!canvasRef.current) return
 
     setIsPrinting(true)
+
+    // Find all separator divs and store their original styles
+    const separators = canvasRef.current.querySelectorAll('div[role="separator"]');
+    const originalStyles = new Map();
+    // separators.forEach((separator, index) => {
+    //   originalStyles.set(index, separator.getAttribute('style'));
+    //   separator.setAttribute('style', 'background-color: white !important; border: none !important;');
+    // });
+    separators.forEach((separator, index) => {
+      originalStyles.set(index, separator.getAttribute('style'));
+      separator.setAttribute('style', 'display: none !important;');
+    });
     
     // Wait for the state to update and re-render
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -347,6 +353,15 @@ export default function ComicCreator() {
     } catch (error) {
       console.error('Error generating export:', error)
     } finally {
+      // Restore original styles
+      separators.forEach((separator, index) => {
+        const originalStyle = originalStyles.get(index);
+        if (originalStyle) {
+          separator.setAttribute('style', originalStyle);
+        } else {
+          separator.removeAttribute('style');
+        }
+      });
       setIsPrinting(false)
     }
   }
@@ -379,9 +394,9 @@ export default function ComicCreator() {
       if (data.output && data.output.result) {
         const newImages = [...images]
         setTimeout(() => {
-          newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 };
-          setImages(newImages);
-        }, 2000);
+          newImages[activeImagePanel] = { src: data.output.result, zoom: 1, x: 0, y: 0 }
+          setImages(newImages)
+        }, 2000)
       }
     } catch (error) {
       console.error('Error generating image:', error)
@@ -711,27 +726,27 @@ export default function ComicCreator() {
         <h2 className="text-lg font-bold">Bubble Settings</h2>
         {selectedState ? (
           <>
-        <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700">Font Size</label>
-          <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2">
                 <input
                   type="range"
                   min="12"
                   max="120"
                   value={selectedState.fontSize}
                   onChange={(e) => updateBubbleState(selectedState.id, { fontSize: Number(e.target.value) })}
-              className="w-full"
-            />
-            <input
-              type="number"
+                  className="w-full"
+                />
+                <input
+                  type="number"
                   min="12"
                   max="120"
                   value={selectedState.fontSize}
                   onChange={(e) => updateBubbleState(selectedState.id, { fontSize: Math.min(120, Math.max(12, Number(e.target.value))) })}
-              className="w-16 p-1 border rounded"
-            />
-          </div>
-        </div>
+                  className="w-16 p-1 border rounded"
+                />
+              </div>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Font Family</label>
               <select
@@ -806,7 +821,7 @@ export default function ComicCreator() {
                 <span>Black</span>
                 <Switch
                   checked={selectedState.arrowColor === 'white'}
-                  onCheckedChange={(checked)  => updateBubbleState(selectedState.id, { arrowColor: checked ? 'white' : 'black' })}
+                  onCheckedChange={(checked) => updateBubbleState(selectedState.id, { arrowColor: checked ? 'white' : 'black' })}
                 />
                 <span>White</span>
               </div>
