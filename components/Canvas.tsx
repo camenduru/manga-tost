@@ -213,6 +213,8 @@ export default function ComicCreator() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const [frameThickness, setFrameThickness] = useState(0)
+
   const [imageInputs, setImageInputs] = useState({
     positive_prompt: "A curious mermaid with long blue hair, wearing a necklace made of seashells, holding a glowing pearl, swimming through an underwater cave filled with shimmering treasures and ancient ruins.",
     seed: 0,
@@ -390,7 +392,13 @@ export default function ComicCreator() {
   }
 
   const renderPanel = (index: number) => (
-    <div className="relative h-full bg-gray-700 flex items-center justify-center overflow-hidden">
+    <div 
+      className="relative h-full bg-gray-700 flex items-center justify-center overflow-hidden"
+      style={{
+        border: `${frameThickness}px solid white`,
+        boxSizing: 'border-box'
+      }}
+    >
       {images[index].src ? (
         <div 
           className="relative w-full h-full cursor-move"
@@ -678,30 +686,52 @@ export default function ComicCreator() {
         </Card>
       </div>
       <div className="w-64 bg-white p-4 shadow-lg space-y-4 text-black overflow-y-auto flex flex-col h-full">
+        <h2 className="text-lg font-bold">Comic Settings</h2>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Frame Thickness</label>
+          <div className="flex items-center space-x-2">
+            <Slider
+              min={0}
+              max={10}
+              step={1}
+              value={[frameThickness]}
+              onValueChange={(value) => setFrameThickness(value[0])}
+              className="w-full"
+            />
+            <input
+              type="number"
+              min={0}
+              max={10}
+              value={frameThickness}
+              onChange={(e) => setFrameThickness(Math.min(10, Math.max(0, Number(e.target.value))))}
+              className="w-16 p-1 border rounded"
+            />
+          </div>
+        </div>
         <h2 className="text-lg font-bold">Bubble Settings</h2>
         {selectedState ? (
           <>
-            <div>
+        <div>
               <label className="block text-sm font-medium text-gray-700">Font Size</label>
-              <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
                 <input
                   type="range"
                   min="12"
                   max="120"
                   value={selectedState.fontSize}
                   onChange={(e) => updateBubbleState(selectedState.id, { fontSize: Number(e.target.value) })}
-                  className="w-full"
-                />
-                <input
-                  type="number"
+              className="w-full"
+            />
+            <input
+              type="number"
                   min="12"
                   max="120"
                   value={selectedState.fontSize}
                   onChange={(e) => updateBubbleState(selectedState.id, { fontSize: Math.min(120, Math.max(12, Number(e.target.value))) })}
-                  className="w-16 p-1 border rounded"
-                />
-              </div>
-            </div>
+              className="w-16 p-1 border rounded"
+            />
+          </div>
+        </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Font Family</label>
               <select
