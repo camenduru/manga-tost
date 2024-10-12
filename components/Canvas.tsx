@@ -214,7 +214,7 @@ export default function ComicCreator() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const [imageInputs, setImageInputs] = useState({
-    positive_prompt: "Juaner_cartoon, A curious mermaid with long blue hair, wearing a necklace made of seashells, holding a glowing pearl, swimming through an underwater cave filled with shimmering treasures and ancient ruins.",
+    positive_prompt: "A curious mermaid with long blue hair, wearing a necklace made of seashells, holding a glowing pearl, swimming through an underwater cave filled with shimmering treasures and ancient ruins.",
     seed: 0,
     steps: 20,
     guidance: 3.5,
