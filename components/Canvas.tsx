@@ -223,8 +223,8 @@ export default function ComicCreator() {
     lora_strength_clip: 1,
     sampler_name: "euler",
     scheduler: "simple",
-    width: 1024,
-    height: 1024
+    width: 1638,
+    height: 992
   })
 
   const loraOptions = [
