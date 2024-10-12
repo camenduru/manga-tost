@@ -22,8 +22,7 @@ with torch.inference_mode():
         compile_extras=True,
         compile_blocks=True,
         offload_flow=False,
-        offload_text_enc=False,
-        offload_vae=False
+        offload_text_enc=False
     )
     pipe = FluxPipeline.load_pipeline_from_config(config)
 
@@ -86,14 +85,16 @@ def generate(input):
     lora_path = f"/content/models/loras/{lora_file}"
     pipe.load_lora(lora_path, scale=lora_strength_model)
 
-    pipe.generate(prompt=positive_prompt,
-                    width=closestNumber(width, 16),
-                    height=closestNumber(height, 16),
-                    num_steps=steps,
-                    guidance=guidance,
-                    seed=seed,
-                    strength=lora_strength_model,
-                    init_image=None).save("/content/flux-comic-tost.png")
+    image_stream = pipe.generate(prompt=positive_prompt,
+                        width=closestNumber(width, 16),
+                        height=closestNumber(height, 16),
+                        num_steps=steps,
+                        guidance=guidance,
+                        seed=seed,
+                        strength=lora_strength_model,
+                        init_image=None)
+    image = Image.open(image_stream)
+    image.save("/content/flux-comic-tost.png")
 
     result = "/content/flux-comic-tost.png"
     presigned_response, upload_response, file_name = upload_file_to_uploadthing(result)
