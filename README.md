@@ -16,7 +16,8 @@ npx create-next-app@latest canvas --typescript --tailwind --eslint
 npm run dev
 ```
 
-### 📦 Nodel
+### 📦 Model
+
 Thanks to all open-source community model creators ❤ <br />
 
 https://civitai.com/models/802032/black-and-white-anime-pixel-art | bw_pixel_anime_v1.0.safetensors <br />
