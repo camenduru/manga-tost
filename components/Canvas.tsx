@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Rnd } from 'react-rnd'
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, Trash2, Image as ImageIcon, ZoomIn, ZoomOut, RefreshCw, Printer, Download, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, Trash2, Image as ImageIcon, ZoomIn, ZoomOut, RefreshCw, Printer, Download, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Save } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from "@/components/ui/resizable"
@@ -406,8 +406,21 @@ export default function ComicCreator() {
     }
   }
 
+  const handleSaveImage = (index: number) => {
+    const imageData = images[index].src
+    if (imageData) {
+      const link = document.createElement('a')
+      link.href = imageData
+      link.download = `comic-panel-${index + 1}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+
   const renderPanel = (index: number) => (
     <div 
+      id={`panel-${index}`}
       className="relative h-full bg-gray-700 flex items-center justify-center overflow-hidden"
       style={{
         border: `${frameThickness}px solid white`,
@@ -458,6 +471,14 @@ export default function ComicCreator() {
                 aria-label="Replace image"
               >
                 <RefreshCw className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => handleSaveImage(index)}
+                aria-label="Save image"
+              >
+                <Save className="h-4 w-4" />
               </Button>
             </div>
           )}
