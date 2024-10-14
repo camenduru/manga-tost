@@ -406,15 +406,27 @@ export default function ComicCreator() {
     }
   }
 
-  const handleSaveImage = (index: number) => {
+  const handleSaveImage = async (index: number) => {
     const imageData = images[index].src
     if (imageData) {
-      const link = document.createElement('a')
-      link.href = imageData
-      link.download = `comic-panel-${index + 1}.png`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      try {
+        let blob
+        if (imageData.startsWith('data:')) {
+          const response = await fetch(imageData)
+          blob = await response.blob()
+        } else {
+          const response = await fetch(imageData)
+          blob = await response.blob()
+        }
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `comic-panel-${index + 1}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (error) { }
     }
   }
 
